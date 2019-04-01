@@ -31,7 +31,6 @@ public class StaffController {
         if (session.getAttribute("id") == null) {
             return "redirect:/login";
         }
-        /* Get staff info */
         int id = Integer.parseInt(session.getAttribute("id").toString());
         StaffDTO staff = staffService.findStaffById(id);
         modelMap.addAttribute("staff", staff);
@@ -50,7 +49,7 @@ public class StaffController {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="LOGIN">
-    @PostMapping(value = "/log-in")
+    @PostMapping(value = "/login")
     public String login(HttpServletRequest request,
             @RequestParam Map<String, String> req, RedirectAttributes redirectAttributes) {
         int loginId = staffService.checkLogin(req.get("username"), req.get("password"));
@@ -171,19 +170,19 @@ public class StaffController {
 
     //<editor-fold defaultstate="collapsed" desc="DELETE STAFF">
     @GetMapping(value = "/delete/{id}")
-    public String deleteStaff(HttpSession session, @PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    public String deleteStaff(HttpSession session, @PathVariable Integer id, Model model) {
         int idSession = (int) session.getAttribute("id");
         /* can not delete your current account */
         if (idSession == id) {
-            redirectAttributes.addFlashAttribute("error", "Can't delete yourself!!!");
-            return "redirect:/list";
+            model.addAttribute("error", "Can't delete yourself!!!");
+            return "forward:/list";
         }
         if (staffService.deleteStaff(id)) {
-            redirectAttributes.addFlashAttribute("msg", "Deleted!");
-            return "redirect:/list";
+            model.addAttribute("msg", "Deleted!");
+            return "forward:/list";
         }
-        redirectAttributes.addFlashAttribute("error", "An error has occured! Please contact us.");
-        return "redirect:/list";
+        model.addAttribute("error", "An error has occured! Please contact us.");
+        return "forward:/list";
     }
     //</editor-fold>
 
